@@ -1,7 +1,8 @@
 import { Input } from "@/components/input"
-import { LogInIcon, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 import { Suspense } from "react"
 import { SearchInput } from "./components/search-input/search-input"
+import { SignInButton } from "./components/sign-in-button"
 
 export function Header() {
   return (
@@ -30,12 +31,7 @@ export function Header() {
           </Suspense>
         </div>
 
-        <button
-          type="button"
-          className="size-8 rounded-full bg-navy-700 border border-navy-500 flex items-center justify-center hover:bg-navy-600 transition-colors duration-150 cursor-pointer"
-        >
-          <LogInIcon className="size-3.5 text-navy-200" />
-        </button>
+        <SignInButton />
       </div>
     </header>
   )

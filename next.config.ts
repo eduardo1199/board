@@ -12,6 +12,17 @@ const nextConfig: NextConfig = {
       },
     },
   },
+   images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'https://avatars.githubusercontent.com/u/',
+        port: '',
+        pathname: '**',
+        search: '',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
