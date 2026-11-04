@@ -1,17 +1,49 @@
-import { Button } from "@/components/button"
-import { Card } from "@/components/card"
+"use client"
+
+import { ArchiveIcon, MessageCircleIcon } from "lucide-react"
 import { Section } from "@/components/section"
-import { listIssues } from "@/http/list-issues"
-import { ArchiveIcon, MessageCircleIcon, ThumbsUpIcon } from "lucide-react"
+import { Card } from "@/components/card"
+import { Button } from "@/components/button"
+import { useQuery } from "@tanstack/react-query"
+import { getIssueInteractions } from "@/http/get-issue-interactions"
+import { useMemo } from "react"
+import { LikeButton } from "@/components/like-button"
+import { Issues } from "@/api/routes/schemas/issue-list"
 
 type HomeProps = {
-  searchParams?: Promise<{ q?: string }>
+  issues: Issues
 }
 
-export async function BoardContent({ searchParams }: HomeProps) {
-  const params = await searchParams
+export function BoardContent({ issues }: HomeProps) {
+  const allIssuesIds = [
+    ...issues.backlog.map((issue) => issue.id),
+    ...issues.todo.map((issue) => issue.id),
+    ...issues.in_progress.map((issue) => issue.id),
+    ...issues.done.map((issue) => issue.id),
+  ]
 
-  const issues = await listIssues({ search: params?.q })
+  const { data: interactionsData } = useQuery(
+    {
+      queryKey: ["issue-likes", allIssuesIds.sort().join(",")],
+      queryFn: () => getIssueInteractions({ issueIds: allIssuesIds }),
+    },
+  )
+
+  const interactions = useMemo(() => {
+    if (!interactionsData) {
+      return new Map<string, { isLiked: boolean; likesCount: number }>()
+    }
+
+    return new Map<string, { isLiked: boolean; likesCount: number }>(
+      interactionsData.interactions.map((interaction) => [
+        interaction.issueId,
+        {
+          isLiked: interaction.isLiked,
+          likesCount: interaction.likesCount,
+        },
+      ]),
+    )
+  }, [interactionsData])
 
   return (
     <>
@@ -34,25 +66,30 @@ export async function BoardContent({ searchParams }: HomeProps) {
               </p>
             </div>
           ) : (
-            issues.backlog.map((issue) => (
-              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
-                <Card.Header>
-                  <Card.Number>ISS-{issue.issueNumber}</Card.Number>
-                  <Card.Title>{issue.title}</Card.Title>
-                </Card.Header>
-                <Card.Footer>
-                  <Button>
-                    <ThumbsUpIcon className="size-3" />
-                    <span className="text-sm">12</span>
-                  </Button>
+            issues.backlog.map((issue) => {
+              const interaction = interactions.get(issue.id)
 
-                  <Button>
-                    <MessageCircleIcon className="size-3" />
-                    <span className="text-sm">6</span>
-                  </Button>
-                </Card.Footer>
-              </Card.Root>
-            ))
+              return (
+                <Card.Root href={`/issues/${issue.id}`} key={issue.id}>
+                  <Card.Header>
+                    <Card.Number>ISS-{issue.issueNumber}</Card.Number>
+                    <Card.Title>{issue.title}</Card.Title>
+                  </Card.Header>
+                  <Card.Footer>
+                    <LikeButton
+                      issueId={issue.id}
+                      initialLikes={interaction?.likesCount ?? 0}
+                      initialLiked={interaction?.isLiked ?? false}
+                    />
+
+                    <Button>
+                      <MessageCircleIcon className="size-3" />
+                      <span className="text-sm">{issue.comments}</span>
+                    </Button>
+                  </Card.Footer>
+                </Card.Root>
+              )
+            })
           )}
         </Section.Content>
       </Section.Root>
@@ -61,12 +98,13 @@ export async function BoardContent({ searchParams }: HomeProps) {
         <Section.Header>
           <Section.Title>
             <ArchiveIcon className="size-3" />
-            Todo
+            To-do
           </Section.Title>
 
           <Section.IssueCount>{issues.todo.length}</Section.IssueCount>
         </Section.Header>
 
+        {/* Content */}
         <Section.Content>
           {issues.todo.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-center">
@@ -75,25 +113,30 @@ export async function BoardContent({ searchParams }: HomeProps) {
               </p>
             </div>
           ) : (
-            issues.todo.map((issue) => (
-              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
-                <Card.Header>
-                  <Card.Number>ISS-{issue.issueNumber}</Card.Number>
-                  <Card.Title>{issue.title}</Card.Title>
-                </Card.Header>
-                <Card.Footer>
-                  <Button>
-                    <ThumbsUpIcon className="size-3" />
-                    <span className="text-sm">12</span>
-                  </Button>
+            issues.todo.map((issue) => {
+              const interaction = interactions.get(issue.id)
 
-                  <Button>
-                    <MessageCircleIcon className="size-3" />
-                    <span className="text-sm">6</span>
-                  </Button>
-                </Card.Footer>
-              </Card.Root>
-            ))
+              return (
+                <Card.Root href={`/issues/${issue.id}`} key={issue.id}>
+                  <Card.Header>
+                    <Card.Number>ISS-{issue.issueNumber}</Card.Number>
+                    <Card.Title>{issue.title}</Card.Title>
+                  </Card.Header>
+                  <Card.Footer>
+                    <LikeButton
+                      issueId={issue.id}
+                      initialLikes={interaction?.likesCount ?? 0}
+                      initialLiked={interaction?.isLiked ?? false}
+                    />
+
+                    <Button>
+                      <MessageCircleIcon className="size-3" />
+                      <span className="text-sm">{issue.comments}</span>
+                    </Button>
+                  </Card.Footer>
+                </Card.Root>
+              )
+            })
           )}
         </Section.Content>
       </Section.Root>
@@ -102,12 +145,13 @@ export async function BoardContent({ searchParams }: HomeProps) {
         <Section.Header>
           <Section.Title>
             <ArchiveIcon className="size-3" />
-            In Progress
+            In progress
           </Section.Title>
 
           <Section.IssueCount>{issues.in_progress.length}</Section.IssueCount>
         </Section.Header>
 
+        {/* Content */}
         <Section.Content>
           {issues.in_progress.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-center">
@@ -116,25 +160,29 @@ export async function BoardContent({ searchParams }: HomeProps) {
               </p>
             </div>
           ) : (
-            issues.in_progress.map((issue) => (
-              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
-                <Card.Header>
-                  <Card.Number>ISS-{issue.issueNumber}</Card.Number>
-                  <Card.Title>{issue.title}</Card.Title>
-                </Card.Header>
-                <Card.Footer>
-                  <Button>
-                    <ThumbsUpIcon className="size-3" />
-                    <span className="text-sm">12</span>
-                  </Button>
+            issues.in_progress.map((issue) => {
+              const interaction = interactions.get(issue.id)
+              return (
+                <Card.Root href={`/issues/${issue.id}`} key={issue.id}>
+                  <Card.Header>
+                    <Card.Number>ISS-{issue.issueNumber}</Card.Number>
+                    <Card.Title>{issue.title}</Card.Title>
+                  </Card.Header>
+                  <Card.Footer>
+                    <LikeButton
+                      issueId={issue.id}
+                      initialLikes={interaction?.likesCount ?? 0}
+                      initialLiked={interaction?.isLiked ?? false}
+                    />
 
-                  <Button>
-                    <MessageCircleIcon className="size-3" />
-                    <span className="text-sm">6</span>
-                  </Button>
-                </Card.Footer>
-              </Card.Root>
-            ))
+                    <Button>
+                      <MessageCircleIcon className="size-3" />
+                      <span className="text-sm">{issue.comments}</span>
+                    </Button>
+                  </Card.Footer>
+                </Card.Root>
+              )
+            })
           )}
         </Section.Content>
       </Section.Root>
@@ -149,6 +197,7 @@ export async function BoardContent({ searchParams }: HomeProps) {
           <Section.IssueCount>{issues.done.length}</Section.IssueCount>
         </Section.Header>
 
+        {/* Content */}
         <Section.Content>
           {issues.done.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-center">
@@ -157,25 +206,30 @@ export async function BoardContent({ searchParams }: HomeProps) {
               </p>
             </div>
           ) : (
-            issues.done.map((issue) => (
-              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
-                <Card.Header>
-                  <Card.Number>ISS-{issue.issueNumber}</Card.Number>
-                  <Card.Title>{issue.title}</Card.Title>
-                </Card.Header>
-                <Card.Footer>
-                  <Button>
-                    <ThumbsUpIcon className="size-3" />
-                    <span className="text-sm">12</span>
-                  </Button>
+            issues.done.map((issue) => {
+              const interaction = interactions.get(issue.id)
 
-                  <Button>
-                    <MessageCircleIcon className="size-3" />
-                    <span className="text-sm">6</span>
-                  </Button>
-                </Card.Footer>
-              </Card.Root>
-            ))
+              return (
+                <Card.Root href={`/issues/${issue.id}`} key={issue.id}>
+                  <Card.Header>
+                    <Card.Number>ISS-{issue.issueNumber}</Card.Number>
+                    <Card.Title>{issue.title}</Card.Title>
+                  </Card.Header>
+                  <Card.Footer>
+                    <LikeButton
+                      issueId={issue.id}
+                      initialLikes={interaction?.likesCount ?? 0}
+                      initialLiked={interaction?.isLiked ?? false}
+                    />
+
+                    <Button>
+                      <MessageCircleIcon className="size-3" />
+                      <span className="text-sm">{issue.comments}</span>
+                    </Button>
+                  </Card.Footer>
+                </Card.Root>
+              )
+            })
           )}
         </Section.Content>
       </Section.Root>
