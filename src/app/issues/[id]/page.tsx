@@ -69,6 +69,12 @@ export default async function IssuePage({ params }: IssuePageProps) {
 
         <form />
 
+        {/**
+         * Pré carregamento de comentários usando Suspense e um fallback skeleton para melhorar a experiência do usuário enquanto os comentários são carregados.
+         * 
+         * Evitando que o carregamento da página total seja comprometida por conta do carregamento dos comentários.
+         * 
+         */}
         <div className="mt-3">
           <Suspense fallback={<IssueCommentsSkeleton />}>
             <IssueCommentsList issueId={issue.id} />
