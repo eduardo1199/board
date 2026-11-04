@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
-   images: {
+  images: {
     remotePatterns: [
       {
         protocol: 'https',
@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  logging: {
+    fetches: {
+      fullUrl: true
+    }
+  }
 };
 
 export default nextConfig;

@@ -12,7 +12,7 @@ export async function BoardContent({ searchParams }: HomeProps) {
   const params = await searchParams
 
   console.log(params?.q)
-  const issues = await listIssues()
+  const issues = await listIssues({ search: params?.q })
 
   return (
     <>
@@ -28,15 +28,21 @@ export async function BoardContent({ searchParams }: HomeProps) {
 
         {/* Content */}
         <Section.Content>
-          {issues.backlog.map((issue) => {
-            return (
+          {issues.backlog.length === 0 ? (
+            <div className="flex items-center justify-center py-8 text-center">
+              <p className="text-sm text-navy-300">
+                No issues matching your filters
+              </p>
+            </div>
+          ) : (
+            issues.backlog.map((issue) => (
               <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
                 </Card.Header>
                 <Card.Footer>
-                  <Button className="text-navy-100 flex items-center gap-2 rounded-lg px-2.5 py-1 bg-navy-600 cursor-pointer">
+                  <Button>
                     <ThumbsUpIcon className="size-3" />
                     <span className="text-sm">12</span>
                   </Button>
@@ -47,8 +53,8 @@ export async function BoardContent({ searchParams }: HomeProps) {
                   </Button>
                 </Card.Footer>
               </Card.Root>
-            )
-          })}
+            ))
+          )}
         </Section.Content>
       </Section.Root>
 
@@ -63,15 +69,21 @@ export async function BoardContent({ searchParams }: HomeProps) {
         </Section.Header>
 
         <Section.Content>
-          {issues.todo.map((issue) => {
-            return (
+          {issues.todo.length === 0 ? (
+            <div className="flex items-center justify-center py-8 text-center">
+              <p className="text-sm text-navy-300">
+                No issues matching your filters
+              </p>
+            </div>
+          ) : (
+            issues.todo.map((issue) => (
               <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
                 </Card.Header>
                 <Card.Footer>
-                  <Button className="text-navy-100 flex items-center gap-2 rounded-lg px-2.5 py-1 bg-navy-600 cursor-pointer">
+                  <Button>
                     <ThumbsUpIcon className="size-3" />
                     <span className="text-sm">12</span>
                   </Button>
@@ -82,8 +94,8 @@ export async function BoardContent({ searchParams }: HomeProps) {
                   </Button>
                 </Card.Footer>
               </Card.Root>
-            )
-          })}
+            ))
+          )}
         </Section.Content>
       </Section.Root>
 
@@ -98,15 +110,21 @@ export async function BoardContent({ searchParams }: HomeProps) {
         </Section.Header>
 
         <Section.Content>
-          {issues.in_progress.map((issue) => {
-            return (
+          {issues.in_progress.length === 0 ? (
+            <div className="flex items-center justify-center py-8 text-center">
+              <p className="text-sm text-navy-300">
+                No issues matching your filters
+              </p>
+            </div>
+          ) : (
+            issues.in_progress.map((issue) => (
               <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
                 </Card.Header>
                 <Card.Footer>
-                  <Button className="text-navy-100 flex items-center gap-2 rounded-lg px-2.5 py-1 bg-navy-600 cursor-pointer">
+                  <Button>
                     <ThumbsUpIcon className="size-3" />
                     <span className="text-sm">12</span>
                   </Button>
@@ -117,8 +135,8 @@ export async function BoardContent({ searchParams }: HomeProps) {
                   </Button>
                 </Card.Footer>
               </Card.Root>
-            )
-          })}
+            ))
+          )}
         </Section.Content>
       </Section.Root>
 
@@ -133,15 +151,21 @@ export async function BoardContent({ searchParams }: HomeProps) {
         </Section.Header>
 
         <Section.Content>
-          {issues.done.map((issue) => {
-            return (
+          {issues.done.length === 0 ? (
+            <div className="flex items-center justify-center py-8 text-center">
+              <p className="text-sm text-navy-300">
+                No issues matching your filters
+              </p>
+            </div>
+          ) : (
+            issues.done.map((issue) => (
               <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
                 </Card.Header>
                 <Card.Footer>
-                  <Button className="text-navy-100 flex items-center gap-2 rounded-lg px-2.5 py-1 bg-navy-600 cursor-pointer">
+                  <Button>
                     <ThumbsUpIcon className="size-3" />
                     <span className="text-sm">12</span>
                   </Button>
@@ -152,8 +176,8 @@ export async function BoardContent({ searchParams }: HomeProps) {
                   </Button>
                 </Card.Footer>
               </Card.Root>
-            )
-          })}
+            ))
+          )}
         </Section.Content>
       </Section.Root>
     </>
