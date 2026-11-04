@@ -11,7 +11,6 @@ type HomeProps = {
 export async function BoardContent({ searchParams }: HomeProps) {
   const params = await searchParams
 
-  console.log(params?.q)
   const issues = await listIssues({ search: params?.q })
 
   return (
@@ -36,7 +35,7 @@ export async function BoardContent({ searchParams }: HomeProps) {
             </div>
           ) : (
             issues.backlog.map((issue) => (
-              <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
+              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
@@ -77,7 +76,7 @@ export async function BoardContent({ searchParams }: HomeProps) {
             </div>
           ) : (
             issues.todo.map((issue) => (
-              <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
+              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
@@ -118,7 +117,7 @@ export async function BoardContent({ searchParams }: HomeProps) {
             </div>
           ) : (
             issues.in_progress.map((issue) => (
-              <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
+              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>
@@ -159,7 +158,7 @@ export async function BoardContent({ searchParams }: HomeProps) {
             </div>
           ) : (
             issues.done.map((issue) => (
-              <Card.Root href={'/issue/' + issue.issueNumber} key={issue.id}>
+              <Card.Root href={'/issues/' + issue.id} key={issue.id}>
                 <Card.Header>
                   <Card.Number>ISS-{issue.issueNumber}</Card.Number>
                   <Card.Title>{issue.title}</Card.Title>

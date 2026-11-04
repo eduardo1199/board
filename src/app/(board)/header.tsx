@@ -2,7 +2,7 @@ import { Input } from "@/components/input"
 import { SearchIcon } from "lucide-react"
 import { Suspense } from "react"
 import { SearchInput } from "./components/search-input/search-input"
-import { SignInButton } from "./components/sign-in-button"
+import { SignInButton } from "../../components/sign-in-button"
 
 export function Header() {
   return (
